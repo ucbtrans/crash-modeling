@@ -49,3 +49,34 @@ pillow
 flake8
 black
 
+___________
+Code review:
+- Full pipeline seems to be work in progess code? only header so far
+- I did not look at collisions_wo_RP in detail since this seems to be the initial code that is fairly handcrafted and we will only use to validate the more automated pipeline build at the moment
+- shifter.py -- this functionality could have been achieved with the (https://cps.pages.gitlab.lrz.de/commonroad/commonroad-io/api/scenario.html#commonroad.scenario.scenario.Scenario.translate_rotate)[scenario.translate_rotate method]
+- collauto.py
+  * The main function should take the geo location as input and not street names - you could define a enum for default locations like Shattuck/Kittredge
+  * You could fill (https://github.com/ucbtrans/crash-modeling/blob/main/common_git/collauto.py#L86)[all fields of the scenario] meaningfully - Name etc is missing
+- RoutePlan.py
+  * Initial state and goal should be determined more automatically based on the crash report
+  * Steps after getting route: 
+(1) It should be irrelevant if the reference (center) points are equidistant for reactive planner - if not there should be a functionality in the dirvability-checker package that smooths them
+(2) To ensure a collision, I would calculate the distance from initial state to goal: use the (https://commonroad.in.tum.de/tutorials/drivability-checker-curvilinear-coordinate-system)[curivlinear coordinate system] for that - 1. convert points to curvilinear coordinate systems - 2. convert initial and goal state to curvilinear coordinate system to get (s,d) coordinates for both 3. s_diff = s_goal - s_init is the distance
+(3) Then, set the desired and initial velocity based on pre-defined time to collision, e.g., v = s_diff / t_predef
+(4) Use the reactive planner to generate the trajectories similar to this (taken from (https://commonroad.in.tum.de/tutorials/commonroad-reactive-planner-getting-started)[this tutorial]):
+
+from commonroad_rp.reactive_planner import ReactivePlanner
+# initialize reactive planner
+planner = ReactivePlanner(config)
+# set reference path for curvilinear coordinate system
+planner.set_reference_path(route.reference_path)
+planner.record_state_and_input(planner.x_0)
+# set desired velocity. Also our init velocity for now
+planner.set_desired_velocity(current_speed=planner.x_0.velocity)
+# call plan function
+# the output is a tuple of the planning result, consisting of the Cartesian and Curvilinear planned trajectory
+optimal = planner.plan()
+# retrieve the Cartesian trajectory
+planned_traj_cart = optimal[0]
+
+
