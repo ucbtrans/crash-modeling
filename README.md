@@ -62,13 +62,15 @@ Code review:
   * Steps after getting route:
 
     
-(1) It should be irrelevant if the reference (center) points are equidistant for reactive planner - if not there should be a functionality in the dirvability-checker package that smooths them
+(1) It should be irrelevant if the reference (center) points are equidistant for reactive planner - if not there should be a functionality in the dirvability-checker package that smooths them - ?For sure that makes things a litle easier?
 
-(2) To ensure a collision, I would calculate the distance from initial state to goal: use the [curvilinear coordinate system](https://commonroad.in.tum.de/tutorials/drivability-checker-curvilinear-coordinate-system)for that - 1. convert points to curvilinear coordinate systems - 2. convert initial and goal state to curvilinear coordinate system to get (s,d) coordinates for both 3. s_diff = s_goal - s_init is the distance
+(2) To ensure a collision, I would calculate the distance from initial state to goal: use the [curvilinear coordinate system](https://commonroad.in.tum.de/tutorials/drivability-checker-curvilinear-coordinate-system)for that - 1. convert points to curvilinear coordinate systems - 2. convert initial and goal state to curvilinear coordinate system to get (s,d) coordinates for both 3. s_diff = s_goal - s_init is the distance ?For sure?
 
-(3) Then, set the desired and initial velocity based on pre-defined time to collision, e.g., v = s_diff / t_predef
+(3) Then, set the desired and initial velocity based on pre-defined time to collision, e.g., v = s_diff / t_predef ?For sure, what is T_predef in this situatlion?
 
-(4) Use the reactive planner to generate the trajectories similar to this (taken from [this tutorial](https://commonroad.in.tum.de/tutorials/commonroad-reactive-planner-getting-started)):
+
+(4) Use the reactive planner to generate the trajectories similar to this (taken from [this tutorial](https://commonroad.in.tum.de/tutorials/commonroad-reactive-planner-getting-started)): ?In progress geeting Rp to work on our routes from Route planner?
+
 
 ```python
 from commonroad_rp.reactive_planner import ReactivePlanner
